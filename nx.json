@@ -7,9 +7,16 @@
       }
     }
   },
+  "namedInputs": {
+    "noStories": ["!{projectRoot}/stories/*"]
+  },
   "targetDefaults": {
     "build": {
-      "inputs": ["!{projectRoot}/stories/*"]
+      "inputs": ["noStories", "^noStories"],
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "dependsOn": ["^build"]
     }
   }
 }
