@@ -1,26 +1,94 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateSafraDto } from './dto/create-safra.dto';
 import { UpdateSafraDto } from './dto/update-safra.dto';
+import { UserService } from 'src/user/user.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SafrasService {
-  create(createSafraDto: CreateSafraDto) {
-    return 'This action adds a new safra';
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly user: UserService,
+  ) {}
+  async create(createSafraDto: CreateSafraDto, userId: string) {
+    const user = await this.user.findById(userId);
+
+    const createdSafra = await this.prisma.safra.create({
+      data: {
+        ...createSafraDto,
+        userId: user.id,
+      },
+    });
+
+    if (!createdSafra)
+      throw new Error('Não foi possível criar uma nova safra! Tente novamente');
+
+    return createdSafra;
   }
 
-  findAll() {
-    return `This action returns all safras`;
+  async findAll(userId: string) {
+    await this.user.findById(userId);
+
+    const safras = await this.prisma.safra.findMany({
+      where: {
+        userId,
+      },
+    });
+    return safras;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} safra`;
+  async findOne(id: number, userId: string) {
+    await this.user.findById(userId);
+
+    const safra = await this.prisma.safra.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!safra) throw new NotFoundException('Safra não encontrada!');
+
+    return safra;
   }
 
-  update(id: number, updateSafraDto: UpdateSafraDto) {
-    return `This action updates a #${id} safra`;
+  async update(id: number, updateSafraDto: UpdateSafraDto, userId: string) {
+    const safra = await this.findOne(id, userId);
+
+    if (safra.userId !== userId) throw new UnauthorizedException();
+
+    const updatedSafra = await this.prisma.safra.update({
+      where: { id },
+      data: {
+        ...updateSafraDto,
+      },
+    });
+
+    if (!updatedSafra)
+      throw new BadRequestException(
+        'Houve um erro ao tentar atualizar essa safra!',
+      );
+
+    return updatedSafra;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} safra`;
+  async remove(id: number, userId: string) {
+    const safra = await this.findOne(id, userId);
+
+    if (safra.userId !== userId) throw new UnauthorizedException();
+
+    try {
+      await this.prisma.safra.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(
+        'Algo inesperado aconteceu e não foi possível deletar essa safra, tente novamente!',
+      );
+    }
   }
 }

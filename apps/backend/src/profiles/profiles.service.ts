@@ -40,10 +40,11 @@ export class ProfilesService {
   }
 
   async update(userId: string, updateProfileDto: UpdateProfileDto) {
-    const user = await this.user.findById(userId);
-    if (!user) {
-      throw new Error('User not found!');
+    if (!updateProfileDto) {
+      throw new Error('body is empty');
     }
+
+    const user = await this.user.findById(userId);
     const profile = this.prisma.profile.update({
       where: {
         id: user.Profile.id,
