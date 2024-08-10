@@ -15,6 +15,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   Profile        Profile?
+  Safra          Safra[]
 }
 
 model Profile {
@@ -25,10 +26,69 @@ model Profile {
   name      String?
   plan      Plan     @default(FREE)
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Plan {
   FREE
   PREMIUM
+}
+
+// domain
+
+model Safra {
+  id              Int      @id @default(autoincrement())
+  culture         String
+  name            String?
+  squareArea      Float?
+  quantityPlanted Int?
+  createdAt       DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId  String
+  Produto Product[]
+  Service Service[]
+  Harvest Harvest[]
+}
+
+model Product {
+  id         Int          @id @default(autoincrement())
+  name       String
+  safra      Safra        @relation(fields: [safraId], references: [id], onDelete: Cascade)
+  safraId    Int
+  BuyProduct BuyProduct[]
+}
+
+model BuyProduct {
+  id        Int      @id @default(autoincrement())
+  price     Float
+  quantity  Int
+  store     String?
+  createdAt DateTime @default(now())
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+}
+
+model Service {
+  id    Int    @id @default(autoincrement())
+  name  String
+  price Float
+
+  createdAt DateTime @default(now())
+
+  safra   Safra @relation(fields: [safraId], references: [id], onDelete: Cascade)
+  safraId Int
+}
+
+model Harvest {
+  id            Int      @id @default(autoincrement())
+  kilograms     Int?
+  current_price Float?
+  gain          Float
+  createdAt     DateTime @default(now())
+
+  safra   Safra @relation(fields: [safraId], references: [id], onDelete: Cascade)
+  safraId Int
 }
