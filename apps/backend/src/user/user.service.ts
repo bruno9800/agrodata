@@ -7,7 +7,6 @@ import { UserNotFoundError } from './erros/user-not-found';
 import { DeleteUserError } from './erros/delete-user-error';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -32,7 +31,9 @@ export class UserService {
       },
     });
 
-    return createdUser;
+    return {
+      user: createdUser,
+    };
   }
 
   async findAll() {

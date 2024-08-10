@@ -64,10 +64,12 @@ export class AuthService {
           name: `${user.firstName} ${user.lastName}`,
         },
       );
+
       const jwtToken = this.jwtService.sign({
-        sub: newUser.id,
-        email: newUser.email,
+        sub: newUser.user.id,
+        email: newUser.user.email,
       });
+
       return {
         access_token: jwtToken,
         needsPasswordUpdate: true,
