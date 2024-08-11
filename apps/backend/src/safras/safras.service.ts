@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -42,9 +44,7 @@ export class SafrasService {
     return safras;
   }
 
-  async findOne(id: number, userId: string) {
-    await this.user.findById(userId);
-
+  async findOne(id: number) {
     const safra = await this.prisma.safra.findUnique({
       where: {
         id,
@@ -57,7 +57,7 @@ export class SafrasService {
   }
 
   async update(id: number, updateSafraDto: UpdateSafraDto, userId: string) {
-    const safra = await this.findOne(id, userId);
+    const safra = await this.findOne(id);
 
     if (safra.userId !== userId) throw new UnauthorizedException();
 
@@ -77,7 +77,7 @@ export class SafrasService {
   }
 
   async remove(id: number, userId: string) {
-    const safra = await this.findOne(id, userId);
+    const safra = await this.findOne(id);
 
     if (safra.userId !== userId) throw new UnauthorizedException();
 
@@ -86,8 +86,9 @@ export class SafrasService {
         where: { id },
       });
     } catch (error) {
-      throw new Error(
+      throw new HttpException(
         'Algo inesperado aconteceu e não foi possível deletar essa safra, tente novamente!',
+        HttpStatus.NOT_MODIFIED,
       );
     }
   }

@@ -8,9 +8,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { SafrasModule } from './safras/safras.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, SafrasModule, ProfilesModule],
+  imports: [AuthModule, PrismaModule, UserModule, SafrasModule, ProfilesModule, ProductsModule],
   controllers: [AppController],
   providers: [
     AppService,

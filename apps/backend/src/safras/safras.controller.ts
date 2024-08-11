@@ -27,8 +27,8 @@ export class SafrasController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user) {
-    return this.safrasService.findOne(+id, user.id);
+  findOne(@Param('id') id: string) {
+    return this.safrasService.findOne(+id);
   }
 
   @Patch(':id')

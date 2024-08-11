@@ -54,7 +54,7 @@ model Safra {
 
 model Product {
   id         Int          @id @default(autoincrement())
-  name       String
+  name       String       @unique
   safra      Safra        @relation(fields: [safraId], references: [id], onDelete: Cascade)
   safraId    Int
   BuyProduct BuyProduct[]

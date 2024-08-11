@@ -8,5 +8,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   imports: [UserModule, PrismaModule],
   controllers: [SafrasController],
   providers: [SafrasService],
+  exports: [SafrasService],
 })
 export class SafrasModule {}
