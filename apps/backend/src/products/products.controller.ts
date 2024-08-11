@@ -22,8 +22,8 @@ export class ProductsController {
   }
 
   @Get(':safraId')
-  findAll(@Param('safraId') safraId: string) {
-    return this.productsService.findAll(+safraId);
+  findAll(@Param('safraId') safraId: string, @CurrentUser() user) {
+    return this.productsService.findAll(+safraId, user.id);
   }
 
   @Get(':safraId/:productName')

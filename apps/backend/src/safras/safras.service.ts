@@ -44,12 +44,15 @@ export class SafrasService {
     return safras;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, userId: string) {
     const safra = await this.prisma.safra.findUnique({
       where: {
         id,
       },
     });
+
+    if (safra.userId !== userId)
+      throw new UnauthorizedException('Unauthorized! You dont own this safra');
 
     if (!safra) throw new NotFoundException('Safra não encontrada!');
 
@@ -57,9 +60,7 @@ export class SafrasService {
   }
 
   async update(id: number, updateSafraDto: UpdateSafraDto, userId: string) {
-    const safra = await this.findOne(id);
-
-    if (safra.userId !== userId) throw new UnauthorizedException();
+    await this.findOne(id, userId);
 
     const updatedSafra = await this.prisma.safra.update({
       where: { id },
@@ -77,9 +78,7 @@ export class SafrasService {
   }
 
   async remove(id: number, userId: string) {
-    const safra = await this.findOne(id);
-
-    if (safra.userId !== userId) throw new UnauthorizedException();
+    await this.findOne(id, userId);
 
     try {
       await this.prisma.safra.delete({

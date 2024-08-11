@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -18,29 +17,31 @@ export class ProductsService {
     private readonly safra: SafrasService,
   ) {}
   async create(createProductDto: CreateProductDto, userId: string) {
+    const name = createProductDto.name
+      .trim()
+      .toLowerCase()
+      .replaceAll(' ', '-');
     const productAlreadyExists = await this.prisma.product.findFirst({
-      where: { name: createProductDto.name.trim().toLowerCase() },
+      where: { name },
     });
 
     if (productAlreadyExists)
       throw new ConflictException('This product already exists');
 
-    const safra = await this.safra.findOne(createProductDto.safraId);
-
-    if (safra.userId !== userId)
-      throw new UnauthorizedException('Esse usuário não é o dono dessa safra');
+    await this.safra.findOne(createProductDto.safraId, userId);
 
     const product = await this.prisma.product.create({
       data: {
-        ...createProductDto,
+        name,
+        safraId: createProductDto.safraId,
       },
     });
 
     return product;
   }
 
-  async findAll(safraId: number) {
-    await this.safra.findOne(safraId);
+  async findAll(safraId: number, userId: string) {
+    await this.safra.findOne(safraId, userId);
 
     const products = await this.prisma.product.findMany({
       where: { safraId },
@@ -59,6 +60,9 @@ export class ProductsService {
       where: {
         name,
         safraId,
+      },
+      include: {
+        BuyProduct: true,
       },
     });
 
