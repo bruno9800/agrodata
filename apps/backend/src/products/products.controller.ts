@@ -21,26 +21,27 @@ export class ProductsController {
     return this.productsService.create(createProductDto, user.id);
   }
 
-  @Get(':safraId')
+  @Get('')
   findAll(@Param('safraId') safraId: string, @CurrentUser() user) {
-    return this.productsService.findAll(+safraId, user.id);
+    return this.productsService.findAll(user.id);
   }
 
-  @Get(':safraId/:productName')
-  findOne(
-    @Param('productName') name: string,
-    @Param('safraId') safraId: string,
-  ) {
-    return this.productsService.findOne(name, +safraId);
+  @Get(':name')
+  findOne(@Param('name') name: string, @CurrentUser() user) {
+    return this.productsService.findOne(name, user.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @CurrentUser() user,
+  ) {
+    return this.productsService.update(+id, updateProductDto, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  remove(@Param('id') id: string, @CurrentUser() user) {
+    return this.productsService.remove(+id, user.id);
   }
 }

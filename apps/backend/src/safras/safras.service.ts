@@ -50,11 +50,10 @@ export class SafrasService {
         id,
       },
     });
+    if (!safra) throw new NotFoundException('Safra não encontrada!');
 
     if (safra.userId !== userId)
       throw new UnauthorizedException('Unauthorized! You dont own this safra');
-
-    if (!safra) throw new NotFoundException('Safra não encontrada!');
 
     return safra;
   }

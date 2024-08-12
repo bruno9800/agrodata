@@ -9,9 +9,10 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { SafrasModule } from './safras/safras.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { ProductsModule } from './products/products.module';
+import { BuyProductsModule } from './buy-products/buy-products.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, SafrasModule, ProfilesModule, ProductsModule],
+  imports: [AuthModule, PrismaModule, UserModule, SafrasModule, ProfilesModule, ProductsModule, BuyProductsModule],
   controllers: [AppController],
   providers: [
     AppService,
